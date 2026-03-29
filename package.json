@@ -1,0 +1,13 @@
+{
+  "name": "lovvite",
+  "private": true,
+  "scripts": {
+    "dev:web": "pnpm --filter @lovvite/web dev",
+    "dev:api": "pnpm --filter @lovvite/api dev",
+    "build:web": "pnpm --filter @lovvite/web build",
+    "build:api": "pnpm --filter @lovvite/api build",
+    "build:types": "pnpm --filter @lovvite/types build",
+    "build": "pnpm build:types && pnpm build:web && pnpm build:api",
+    "typecheck": "pnpm -r typecheck"
+  }
+}

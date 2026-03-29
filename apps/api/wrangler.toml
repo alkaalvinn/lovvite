@@ -1,0 +1,10 @@
+name = "lovvite-api"
+main = "src/index.ts"
+compatibility_date = "2025-03-01"
+
+[vars]
+ENVIRONMENT = "development"
+
+# Set these via `wrangler secret put`:
+# SUPABASE_URL
+# SUPABASE_SERVICE_ROLE_KEY

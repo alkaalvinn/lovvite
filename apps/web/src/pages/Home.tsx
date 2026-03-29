@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "../components/ui/Button";
 import { useAuth } from "../hooks/useAuth";
-import { TEMPLATES } from "../lib/templates";
+import { TEMPLATES, type TemplateDefinitionFull } from "../lib/templates";
 
 const CATEGORIES = [
   { id: "all", label: "All" },
@@ -16,6 +16,17 @@ const CATEGORIES = [
 export function Home() {
   const { user } = useAuth();
   const [activeCategory, setActiveCategory] = useState<string>("all");
+  const [previewTemplate, setPreviewTemplate] = useState<TemplateDefinitionFull | null>(null);
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (previewTemplate) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => { document.body.style.overflow = ""; };
+  }, [previewTemplate]);
 
   const filteredTemplates =
     activeCategory === "all"
@@ -101,9 +112,11 @@ export function Home() {
           {/* Mini template previews floating */}
           <div className="mt-16 grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
             {TEMPLATES.slice(0, 3).map((template) => (
-              <div
+              <button
                 key={template.id}
-                className="rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 border border-gray-100 bg-white"
+                type="button"
+                onClick={() => setPreviewTemplate(template)}
+                className="rounded-2xl overflow-hidden shadow-lg shadow-gray-200/50 border border-gray-100 bg-white text-left cursor-pointer hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 <div className="h-48 md:h-56 overflow-hidden">
                   <template.component data={template.defaultData} isPreview />
@@ -116,7 +129,7 @@ export function Home() {
                     {template.category}
                   </p>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         </div>
@@ -260,8 +273,12 @@ export function Home() {
                 key={template.id}
                 className="group rounded-2xl overflow-hidden bg-white border border-gray-200 hover:shadow-xl hover:shadow-gray-200/50 transition-all duration-300 hover:-translate-y-1"
               >
-                {/* Live mini preview */}
-                <div className="h-64 overflow-hidden relative">
+                {/* Live mini preview — clickable */}
+                <button
+                  type="button"
+                  onClick={() => setPreviewTemplate(template)}
+                  className="w-full h-64 overflow-hidden relative cursor-pointer"
+                >
                   <div className="absolute inset-0 scale-[0.5] origin-top-left w-[200%] h-[200%]">
                     <template.component
                       data={template.defaultData}
@@ -269,8 +286,12 @@ export function Home() {
                     />
                   </div>
                   {/* Hover overlay */}
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors" />
-                </div>
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                    <span className="opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 text-gray-800 text-sm font-medium px-4 py-2 rounded-full shadow-sm">
+                      Preview Full Template
+                    </span>
+                  </div>
+                </button>
                 <div className="p-5 flex items-center justify-between">
                   <div>
                     <h3 className="font-semibold text-gray-900">
@@ -404,6 +425,52 @@ export function Home() {
           </p>
         </div>
       </footer>
+
+      {/* ─── FULLSCREEN TEMPLATE PREVIEW MODAL ─── */}
+      {previewTemplate && (
+        <div
+          className="fixed inset-0 z-100 flex flex-col bg-black/60 backdrop-blur-sm"
+          onClick={() => setPreviewTemplate(null)}
+        >
+          {/* Top bar */}
+          <div
+            className="shrink-0 flex items-center justify-between px-5 py-3 bg-white border-b border-gray-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center gap-3">
+              <span className="font-semibold text-gray-900">
+                {previewTemplate.name}
+              </span>
+              <span className="text-xs text-gray-400 capitalize px-2 py-0.5 bg-gray-100 rounded-full">
+                {previewTemplate.category}
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link
+                to={ctaLink}
+                onClick={() => setPreviewTemplate(null)}
+              >
+                <Button size="sm">Use This Template</Button>
+              </Link>
+              <button
+                type="button"
+                onClick={() => setPreviewTemplate(null)}
+                className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors text-gray-500 hover:text-gray-900 text-xl"
+              >
+                &times;
+              </button>
+            </div>
+          </div>
+
+          {/* Full template render */}
+          <div
+            className="flex-1 overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <previewTemplate.component data={previewTemplate.defaultData} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

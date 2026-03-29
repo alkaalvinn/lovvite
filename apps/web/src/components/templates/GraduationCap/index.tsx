@@ -7,7 +7,7 @@ interface TemplateProps {
   isPreview?: boolean;
 }
 
-function GraduationCapComponent({ data: rawData, isPreview }: TemplateProps) {
+function GraduationCapComponent({ data: rawData }: TemplateProps) {
   const parsed = graduationCapSchema.safeParse(rawData);
   const data: GraduationCapData = parsed.success ? parsed.data : defaultData;
 
@@ -20,102 +20,164 @@ function GraduationCapComponent({ data: rawData, isPreview }: TemplateProps) {
       })
     : "";
 
+  const pc = data.primaryColor;
+  const achievements = [data.achievement1, data.achievement2, data.achievement3].filter(Boolean);
+
   return (
-    <div
-      className={`min-h-screen flex items-center justify-center ${isPreview ? "p-4" : "p-6 md:p-12"}`}
-      style={{ background: `linear-gradient(180deg, ${data.primaryColor}08, white, ${data.primaryColor}05)` }}
-    >
-      <div className="max-w-lg w-full text-center space-y-8">
-        {/* Cap icon */}
-        <div className="text-5xl">&#127891;</div>
+    <div className="min-h-screen text-gray-800" style={{ background: `linear-gradient(180deg, ${pc}06, white, ${pc}03)` }}>
+      {/* ═══ HERO ═══ */}
+      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 overflow-hidden">
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `linear-gradient(${pc}20 1px, transparent 1px), linear-gradient(90deg, ${pc}20 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
+        }} />
 
-        {/* Class of year */}
-        {data.year && (
-          <p
-            className="text-sm font-bold tracking-[0.3em] uppercase"
-            style={{ color: data.primaryColor }}
-          >
-            Class of {data.year}
-          </p>
-        )}
+        <div className="relative text-center max-w-lg">
+          <div className="text-6xl mb-6">&#127891;</div>
 
-        {/* Name */}
-        <h1
-          className="text-4xl md:text-5xl font-bold"
-          style={{ color: data.primaryColor }}
-        >
-          {data.graduateName}
-        </h1>
+          {data.year && (
+            <div className="inline-block px-6 py-2 rounded-full mb-8 text-sm font-bold tracking-[0.2em] uppercase text-white" style={{ backgroundColor: pc }}>
+              Class of {data.year}
+            </div>
+          )}
 
-        {/* Degree & School */}
-        <div className="space-y-1">
+          <h1 className="text-5xl sm:text-7xl font-bold leading-tight" style={{ color: pc }}>
+            {data.graduateName}
+          </h1>
+
           {data.degree && (
-            <p className="text-gray-700 font-medium text-lg">{data.degree}</p>
+            <p className="mt-4 text-lg text-gray-600 font-medium">{data.degree}</p>
           )}
           {data.school && (
-            <p className="text-gray-500">{data.school}</p>
+            <p className="mt-1 text-gray-500">{data.school}</p>
           )}
-        </div>
 
-        {/* Divider */}
-        <div className="flex items-center justify-center gap-3">
-          <div className="w-20 h-px bg-gray-300" />
-          <div
-            className="w-2.5 h-2.5 rounded-full"
-            style={{ backgroundColor: data.primaryColor }}
-          />
-          <div className="w-20 h-px bg-gray-300" />
-        </div>
-
-        {/* Message */}
-        {data.message && (
-          <p className="text-gray-600 leading-relaxed max-w-md mx-auto">
-            {data.message}
-          </p>
-        )}
-
-        {/* Celebration Party Details */}
-        <div>
-          <p
-            className="text-xs font-bold tracking-[0.2em] uppercase mb-4"
-            style={{ color: data.primaryColor }}
-          >
-            Graduation Celebration
-          </p>
-          <div
-            className="rounded-xl p-6 space-y-2"
-            style={{ backgroundColor: `${data.primaryColor}08`, border: `1px solid ${data.primaryColor}20` }}
-          >
-            <p className="text-lg font-semibold text-gray-800">
-              {formattedDate}
-            </p>
-            {data.time && (
-              <p className="text-gray-600">{data.time}</p>
-            )}
+          <div className="mt-12 flex flex-col items-center gap-2 opacity-40">
+            <p className="text-xs tracking-[0.2em] uppercase text-gray-500">Scroll</p>
+            <div className="w-px h-8 bg-gray-400" />
           </div>
         </div>
+      </section>
 
-        {/* Venue */}
-        {data.venue && (
-          <div className="space-y-1">
-            <p className="text-xs font-bold tracking-[0.2em] uppercase text-gray-400">
-              Venue
+      {/* ═══ MESSAGE ═══ */}
+      {data.message && (
+        <section className="py-24 px-6">
+          <div className="max-w-xl mx-auto text-center">
+            <div className="flex items-center justify-center gap-3 mb-8">
+              <div className="w-20 h-px bg-gray-300" />
+              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: pc }} />
+              <div className="w-20 h-px bg-gray-300" />
+            </div>
+            <p className="text-xl md:text-2xl leading-relaxed text-gray-600">
+              {data.message}
             </p>
-            <p className="text-lg font-semibold text-gray-800">{data.venue}</p>
-            {data.venueAddress && (
-              <p className="text-gray-500 text-sm">{data.venueAddress}</p>
-            )}
           </div>
-        )}
+        </section>
+      )}
 
-        {/* Bottom decoration */}
-        <p
-          className="text-sm font-medium"
-          style={{ color: data.primaryColor }}
-        >
-          &#9733; Congratulations! &#9733;
+      {/* ═══ ACHIEVEMENTS ═══ */}
+      {achievements.length > 0 && (
+        <section className="py-24 px-6" style={{ backgroundColor: `${pc}05` }}>
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center mb-16">
+              <p className="text-xs font-bold tracking-[0.3em] uppercase mb-3" style={{ color: pc }}>
+                Highlights
+              </p>
+              <h2 className="text-3xl md:text-4xl font-bold" style={{ color: pc }}>
+                Achievements &amp; Honors
+              </h2>
+            </div>
+
+            <div className="space-y-4">
+              {achievements.map((a, i) => (
+                <div
+                  key={i}
+                  className="flex items-start gap-4 bg-white rounded-xl p-5 shadow-sm"
+                  style={{ border: `1px solid ${pc}12` }}
+                >
+                  <div className="w-10 h-10 rounded-xl shrink-0 flex items-center justify-center font-bold text-white text-sm" style={{ backgroundColor: pc }}>
+                    {i + 1}
+                  </div>
+                  <p className="text-gray-700 font-medium pt-2">{a}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══ CELEBRATION DETAILS ═══ */}
+      <section className="py-24 px-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="text-center mb-16">
+            <p className="text-xs font-bold tracking-[0.3em] uppercase mb-3" style={{ color: pc }}>
+              You&apos;re Invited
+            </p>
+            <h2 className="text-3xl md:text-4xl font-bold" style={{ color: pc }}>
+              Graduation Celebration
+            </h2>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-6">
+            <div className="rounded-2xl p-8 text-center bg-white shadow-sm" style={{ border: `1px solid ${pc}15` }}>
+              <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center text-2xl" style={{ backgroundColor: `${pc}10` }}>
+                &#128197;
+              </div>
+              <p className="text-xs font-bold tracking-[0.2em] uppercase mb-2" style={{ color: pc }}>When</p>
+              <p className="text-xl font-bold text-gray-800">{formattedDate}</p>
+              {data.time && <p className="text-gray-500 mt-1">{data.time}</p>}
+            </div>
+
+            <div className="rounded-2xl p-8 text-center bg-white shadow-sm" style={{ border: `1px solid ${pc}15` }}>
+              <div className="w-14 h-14 rounded-2xl mx-auto mb-4 flex items-center justify-center text-2xl" style={{ backgroundColor: `${pc}10` }}>
+                &#128205;
+              </div>
+              <p className="text-xs font-bold tracking-[0.2em] uppercase mb-2" style={{ color: pc }}>Where</p>
+              <p className="text-xl font-bold text-gray-800">{data.venue || "TBA"}</p>
+              {data.venueAddress && <p className="text-gray-500 mt-1 text-sm">{data.venueAddress}</p>}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ FUTURE PLANS ═══ */}
+      {data.futurePlans && (
+        <section className="py-24 px-6" style={{ backgroundColor: `${pc}05` }}>
+          <div className="max-w-md mx-auto text-center">
+            <div className="w-16 h-16 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl" style={{ backgroundColor: `${pc}10` }}>
+              &#128640;
+            </div>
+            <p className="text-xs font-bold tracking-[0.3em] uppercase mb-3" style={{ color: pc }}>
+              What&apos;s Next
+            </p>
+            <h2 className="text-2xl font-bold mb-4" style={{ color: pc }}>
+              The Future
+            </h2>
+            <p className="text-lg text-gray-600 leading-relaxed">{data.futurePlans}</p>
+          </div>
+        </section>
+      )}
+
+      {/* ═══ CLOSING ═══ */}
+      <section className="py-24 px-6">
+        <div className="max-w-lg mx-auto text-center">
+          <p className="text-xs font-bold tracking-[0.3em] uppercase mb-6" style={{ color: pc }}>
+            The tassel was worth the hassle
+          </p>
+          <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: pc }}>
+            Congratulations,
+            <br />
+            {data.graduateName}!
+          </h2>
+          <p className="text-gray-500 text-lg">&#9733; {data.school} &middot; {data.year} &#9733;</p>
+        </div>
+      </section>
+
+      <footer className="py-8 text-center">
+        <p className="text-sm text-gray-400">
+          {data.graduateName}&apos;s Graduation &middot; {formattedDate}
         </p>
-      </div>
+      </footer>
     </div>
   );
 }
